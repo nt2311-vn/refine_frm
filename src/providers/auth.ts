@@ -1,10 +1,13 @@
-import { AuthProvider } from "@refinedev/core";
+import type { AuthProvider } from "@refinedev/core";
 
 import { API_URL, dataProvider } from "./data";
 
+/**
+ * For demo purposes and to make it easier to test the app, you can use the following credentials:
+ */
 export const authCredentials = {
-  email: "nguyentoan231196@gmail.com",
-  password: "demo!@#",
+  email: "michael.scott@dundermifflin.com",
+  password: "demodemo",
 };
 
 export const authProvider: AuthProvider = {
@@ -17,22 +20,26 @@ export const authProvider: AuthProvider = {
         meta: {
           variables: { email },
           rawQuery: `
-                    mutaion Login($email:String!){
-                      login(loginInput: {
-                        email: $email
-                      }) {
-                          accessToken,
-                      }
-                    }`,
+                mutation Login($email: String!) {
+                    login(loginInput: {
+                      email: $email
+                    }) {
+                      accessToken,
+                    }
+                  }
+                `,
         },
       });
+
       localStorage.setItem("access_token", data.login.accessToken);
+
       return {
         success: true,
         redirectTo: "/",
       };
-    } catch (err) {
-      const error = err as Error;
+    } catch (e) {
+      const error = e as Error;
+
       return {
         success: false,
         error: {
@@ -44,6 +51,7 @@ export const authProvider: AuthProvider = {
   },
   logout: async () => {
     localStorage.removeItem("access_token");
+
     return {
       success: true,
       redirectTo: "/login",
@@ -51,10 +59,12 @@ export const authProvider: AuthProvider = {
   },
   onError: async (error) => {
     if (error.statusCode === "UNAUTHENTICATED") {
-      return { logout: true };
+      return {
+        logout: true,
+      };
     }
 
-    return error;
+    return { error };
   },
   check: async () => {
     try {
@@ -65,24 +75,25 @@ export const authProvider: AuthProvider = {
         meta: {
           rawQuery: `
                     query Me {
-                      me {
-                        name
+                        me {
+                          name
+                        }
                       }
-                    }`,
+                `,
         },
       });
+
       return {
         authenticated: true,
         redirectTo: "/",
       };
-    } catch (err) {
+    } catch (error) {
       return {
         authenticated: false,
         redirectTo: "/login",
       };
     }
   },
-
   getIdentity: async () => {
     const accessToken = localStorage.getItem("access_token");
 
@@ -90,24 +101,30 @@ export const authProvider: AuthProvider = {
       const { data } = await dataProvider.custom<{ me: any }>({
         url: API_URL,
         method: "post",
-        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+        headers: accessToken
+          ? {
+              Authorization: `Bearer ${accessToken}`,
+            }
+          : {},
         meta: {
           rawQuery: `
-            query Me {
-                me {
-                  id
-                  name
-                  email
-                  phone
-                  jobTitle
-                  timezone
-                  avatarUrl
-                }
-              }`,
+                    query Me {
+                        me {
+                            id,
+                            name,
+                            email,
+                            phone,
+                            jobTitle,
+                            timezone
+                            avatarUrl
+                        }
+                      }
+                `,
         },
       });
+
       return data.me;
-    } catch (err) {
+    } catch (error) {
       return undefined;
     }
   },
