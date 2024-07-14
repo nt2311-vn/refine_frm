@@ -1,8 +1,23 @@
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { Card, List } from "antd";
 import { Text } from "../text";
+import { useList } from "@refinedev/core";
+import { DASHBOARD_LATEST_ACTIVITIES_AUDITS_QUERY } from "@/graphql/queries";
 
 const LatestActivities = () => {
+  const {
+    data: audit,
+    isLoading: isLoadingAudit,
+    isError,
+    error,
+  } = useList({
+    resource: "audits",
+    meta: {
+      gqlQuery: DASHBOARD_LATEST_ACTIVITIES_AUDITS_QUERY,
+    },
+  });
+
+  const dealIds = audit?.data?.map((audit) => audit?.targetId);
   const isLoading = true;
   return (
     <Card
