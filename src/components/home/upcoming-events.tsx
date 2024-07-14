@@ -1,7 +1,6 @@
 import { CalendarOutlined } from "@ant-design/icons";
 import { Badge, Card, List } from "antd";
 import { Text } from "../text";
-import { useState } from "react";
 import UpcomingEventsSkeleton from "../skeleton/upcoming-events";
 import { useList } from "@refinedev/core";
 import { getDate } from "@/utilities/helpers";
@@ -9,10 +8,17 @@ import { DASHBORAD_CALENDAR_UPCOMING_EVENTS_QUERY } from "@/graphql/queries";
 import dayjs from "dayjs";
 
 const UpcomingEvents = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { data, isLoading: eventsLoading } = useList({
+  const { data, isLoading } = useList({
     resource: "events",
     pagination: { pageSize: 5 },
+    sorters: [{ field: "startDate", order: "asc" }],
+    filters: [
+      {
+        field: "startDate",
+        operator: "gte",
+        value: dayjs().format("YYYY-MM-DD"),
+      },
+    ],
     meta: { gqlQuery: DASHBORAD_CALENDAR_UPCOMING_EVENTS_QUERY },
   });
   return (
@@ -57,7 +63,19 @@ const UpcomingEvents = () => {
               </List.Item>
             );
           }}
-        ></List>
+        />
+      )}
+      {!isLoading && data?.data.length === 0 && (
+        <span
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "220px",
+          }}
+        >
+          No upcoming envents
+        </span>
       )}
     </Card>
   );
