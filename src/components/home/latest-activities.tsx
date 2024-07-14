@@ -2,7 +2,10 @@ import { UnorderedListOutlined } from "@ant-design/icons";
 import { Card, List } from "antd";
 import { Text } from "../text";
 import { useList } from "@refinedev/core";
-import { DASHBOARD_LATEST_ACTIVITIES_AUDITS_QUERY } from "@/graphql/queries";
+import {
+  DASHBOARD_LATEST_ACTIVITIES_AUDITS_QUERY,
+  DASHBOARD_LATEST_ACTIVITIES_DEALS_QUERY,
+} from "@/graphql/queries";
 
 const LatestActivities = () => {
   const {
@@ -19,6 +22,18 @@ const LatestActivities = () => {
 
   const dealIds = audit?.data?.map((audit) => audit?.targetId);
   const isLoading = true;
+
+  const { data: deals, isLoading: isLoadingDeals } = useList({
+    resource: "deals",
+    queryOptions: { enabled: !!dealIds?.length },
+    pagination: {
+      mode: "off",
+    },
+    filters: [{ field: "id", operator: "in", value: dealIds }],
+    meta: {
+      gqlQuery: DASHBOARD_LATEST_ACTIVITIES_DEALS_QUERY,
+    },
+  });
   return (
     <Card
       headStyle={{ padding: "16px" }}
