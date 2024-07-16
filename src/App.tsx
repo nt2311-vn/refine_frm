@@ -17,7 +17,7 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Home, Login, Register, ForgotPassword } from "./pages";
 import Layout from "./components/layout";
 import { resources } from "./config/resources";
-import CompanyList from "./pages/companyList";
+import CompanyList from "./pages/company/list";
 
 function App() {
   return (
