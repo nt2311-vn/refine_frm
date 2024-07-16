@@ -1,6 +1,8 @@
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { Card, List, Space } from "antd";
+import React from "react";
 import { Text } from "../text";
+import LatestActivitiesSkeleton from "../skeleton/latest-activities";
 import { useList } from "@refinedev/core";
 import {
   DASHBOARD_LATEST_ACTIVITIES_AUDITS_QUERY,
@@ -42,6 +44,7 @@ const LatestActivities = () => {
   }
 
   const isLoading = isLoadingAudit || isLoadingDeals;
+
   return (
     <Card
       headStyle={{ padding: "16px" }}
@@ -59,7 +62,7 @@ const LatestActivities = () => {
         <List
           itemLayout="horizontal"
           dataSource={Array.from({ length: 5 }).map((_, i) => ({ id: i }))}
-          renderItem={(_, index) => <LatestActivities key={index} />}
+          renderItem={(_, index) => <LatestActivitiesSkeleton key={index} />}
         />
       ) : (
         <List
@@ -67,16 +70,17 @@ const LatestActivities = () => {
           dataSource={audit?.data}
           renderItem={(item) => {
             const deal =
-              deals?.data?.find((deal) => deal.id === String(item.targetId)) ||
+              deals?.data.find((deal) => deal.id === String(item.targetId)) ||
               undefined;
+
             return (
               <List.Item>
                 <List.Item.Meta
-                  title={dayjs(deal?.createdAt).format("MMMM DD YYYY - HH:mm")}
+                  title={dayjs(deal?.createdAt).format("MMM DD, YYYY - HH:mm")}
                   avatar={
                     <CustomAvatar
                       shape="square"
-                      size={40}
+                      size={48}
                       src={deal?.company.avatarUrl}
                       name={deal?.company.name}
                     />
@@ -87,10 +91,10 @@ const LatestActivities = () => {
                       <Text>
                         {item.action === "CREATE" ? "created" : "moved"}
                       </Text>
-                      <Text strong>{deal?.title}</Text>
+                      <Text strong> {deal?.title}</Text>
                       <Text>deal</Text>
                       <Text>{item.action === "CREATE" ? "in" : "to"}</Text>
-                      <Text strong> {deal?.stage?.title}</Text>
+                      <Text strong>{deal?.stage?.title}</Text>
                     </Space>
                   }
                 />
