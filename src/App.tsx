@@ -17,6 +17,7 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Home, Login, Register, ForgotPassword } from "./pages";
 import Layout from "./components/layout";
 import { resources } from "./config/resources";
+import CompanyList from "./pages/companyList";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
                   }
                 >
                   <Route index element={<Home />} />
+                  <Route path="/companies" element={<CompanyList />} />
                 </Route>
               </Routes>
               <RefineKbar />
